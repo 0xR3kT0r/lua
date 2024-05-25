@@ -21,7 +21,7 @@ local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, 0, 0, 50)
 titleLabel.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
 titleLabel.BorderSizePixel = 0
-titleLabel.Text = "Vamp.gg"
+titleLabel.Text = "Lora X Menu"
 titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 titleLabel.Font = Enum.Font.SourceSans
 titleLabel.TextSize = 24
@@ -77,7 +77,7 @@ local function createButton(text, position, callback)
 end
 
 -- Creating buttons with their respective functions
-createButton("Vamp Lock", 100, function()
+createButton("Lora x red lock", 100, function()
 
     loadstring(game:HttpGet("https://pastebin.com/raw/TXfsreWV"))()
 end)
