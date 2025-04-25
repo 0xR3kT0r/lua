@@ -1,0 +1,35 @@
+
+gg.setVisible(false)
+while true do
+    if gg.isVisible(true) then
+        gg.setVisible(false)
+        break
+    end
+
+    gg.clearResults()
+    gg.setRanges(gg.REGION_ANONYMOUS | gg.REGION_C_ALLOC | gg.REGION_CODE_APP)
+    gg.searchNumber("h 00 00 48 42 00 00 C8 42 00 00 C8 42", gg.TYPE_BYTE)
+    gg.refineNumber("0", gg.TYPE_BYTE)
+
+    local t = gg.getResults(100000)
+    local t2 = {}
+    for i = 1, #t do
+        local addr = t[i].address + 0x11C
+        table.insert(t2, {address = addr, flags = gg.TYPE_DWORD})
+    end
+
+    local values = gg.getValues(t2)
+    local toSet = {}
+    for i = 1, #values do
+        if values[i].value == 0 then
+            table.insert(toSet, {address = values[i].address, flags = gg.TYPE_DWORD, value = 1})
+        end
+    end
+
+    if #toSet > 0 then
+        gg.setValues(toSet)
+    end
+
+    gg.sleep(1500)
+end
+gg.toast("𝐑𝐄𝐃 𝐖𝐀𝐋𝐋𝐇𝐀𝐂𝐊 𝐄𝐍𝐀𝐁𝐋𝐄𝐃")
