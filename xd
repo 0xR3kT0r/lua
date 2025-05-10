@@ -1,0 +1,85 @@
+-- Decompiler will be improved VERY SOON!
+-- Decompiled with Konstant V2.1, a fast Luau decompiler made in Luau by plusgiant5 (https://discord.gg/wyButjTMhM)
+-- Decompiled on 2025-05-10 05:36:33
+-- Luau version 6, Types version 3
+-- Time taken: 0.004024 seconds
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer_upvr = game:GetService("Players").LocalPlayer
+local mouse_upvr = LocalPlayer_upvr:GetMouse()
+local CanShoot_upvr = require(ReplicatedStorage.Modules.Guns.CanShoot)
+local Ammo_CLIENT_upvr = script.Parent:WaitForChild("Ammo_CLIENT")
+local Remote_upvr = ReplicatedStorage:WaitForChild("Remote")
+local Parent_upvr = script.Parent
+local Value_upvr = ReplicatedStorage.GameMode.AimTrainer.Value
+local GunHandler_upvr = require(ReplicatedStorage.Modules.Guns.GunHandler)
+local ShootSound_upvr = script.Parent.Handle.ShootSound
+local Controller_upvr = require(ReplicatedStorage.Modules.Controller)
+local RemoteFunction_upvr = require(ReplicatedStorage.RemoteFunction)
+local Configuration_upvr = require(ReplicatedStorage.Modules.Guns.Configuration)
+script.Parent.Activated:Connect(function() -- Line 21
+	--[[ Upvalues[12]:
+		[1]: LocalPlayer_upvr (readonly)
+		[2]: mouse_upvr (readonly)
+		[3]: CanShoot_upvr (readonly)
+		[4]: Ammo_CLIENT_upvr (readonly)
+		[5]: Remote_upvr (readonly)
+		[6]: Parent_upvr (readonly)
+		[7]: Value_upvr (readonly)
+		[8]: GunHandler_upvr (readonly)
+		[9]: ShootSound_upvr (readonly)
+		[10]: Controller_upvr (readonly)
+		[11]: RemoteFunction_upvr (readonly)
+		[12]: Configuration_upvr (readonly)
+	]]
+	task.wait(_G.GunDelay / 1000)
+	local var25
+	if _G.MobileShiftLock then
+		local _, workspace_FindPartOnRayWithIgnoreList_result2_2 = workspace:FindPartOnRayWithIgnoreList(Ray.new(workspace.CurrentCamera.CFrame.Position + workspace.CurrentCamera.CFrame.LookVector, workspace.CurrentCamera.CFrame.Position + workspace.CurrentCamera.CFrame.LookVector * 9000000000), {LocalPlayer_upvr.Character, workspace.Blacklisted})
+		var25 = workspace_FindPartOnRayWithIgnoreList_result2_2
+	else
+		var25 = mouse_upvr.Hit.p
+	end
+	if LocalPlayer_upvr.Character then
+		local Character = LocalPlayer_upvr.Character
+		if script.Parent:IsDescendantOf(Character) then
+			local State_2 = Character.State
+			if State_2.Shooting_CLIENT.Value == true or CanShoot_upvr(Character) ~= true or State_2.Reload_CLIENT.Value == true or State_2.Reload_SERVER.Value == true then return end
+			if 0 < Ammo_CLIENT_upvr.Value then
+				State_2.Shooting_CLIENT.Value = true
+				Remote_upvr:FireServer("Shooting", Parent_upvr)
+				if not Value_upvr then
+					local var31 = Ammo_CLIENT_upvr
+					var31.Value -= 1
+				end
+				GunHandler_upvr.Raycast(LocalPlayer_upvr, script.Parent.Handle.Position + script.Parent.Handle.CFrame:VectorToWorldSpace(script.Parent.Handle.ShootFX.StudsOffsetWorldSpace), var25, Parent_upvr)
+				task.spawn(function() -- Line 45
+					--[[ Upvalues[1]:
+						[1]: ShootSound_upvr (copied, readonly)
+					]]
+					local clone_upvr = ShootSound_upvr:Clone()
+					clone_upvr.Parent = script.Parent.Handle
+					task.wait()
+					clone_upvr:Play()
+					clone_upvr.Ended:Connect(function() -- Line 50
+						--[[ Upvalues[1]:
+							[1]: clone_upvr (readonly)
+						]]
+						clone_upvr:Destroy()
+					end)
+				end)
+				RemoteFunction_upvr.InvokeClient(Character, LocalPlayer_upvr, "Aim", script.Parent.Handle.Position)
+				task.wait(Configuration_upvr[Parent_upvr.Name].Cooldown)
+				Controller_upvr.MovementChange(State_2.Movement, "ReduceWalk", 5):Destroy()
+				State_2.Shooting_CLIENT.Value = false
+				return
+			end
+			State_2.Shooting_CLIENT.Value = true
+			Remote_upvr:FireServer("ShootingNoAmmo", Parent_upvr)
+			script.Parent.Handle.NoAmmo:Play()
+			RemoteFunction_upvr.InvokeClient(Character, LocalPlayer_upvr, "Aim", script.Parent.Handle.Position)
+			wait(0.3)
+			State_2.Shooting_CLIENT.Value = false
+		end
+	end
+end)
